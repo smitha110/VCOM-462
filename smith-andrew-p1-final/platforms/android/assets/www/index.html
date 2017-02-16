@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>jQuery mobile with Google maps geo directions example</title>
+        <meta content="en" http-equiv="content-language">
+        <meta http-equiv="Content-Security-Policy" content="default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src 'self' 'unsafe-inline' *; img-src * data: 'unsafe-inline'">
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+        <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
+        <link rel="stylesheet" href="css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans|Raleway" rel="stylesheet">
+        <link rel="stylesheet" href="css/index.css">
+        <script>
+        var rutledgeString = '<div class="building">' +
+            '<h1>WUG Artist Talk</h1>' +
+            '<img src="img/rutledge-web.jpg" alt="Rutlege Hall">' +
+            '<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmodtempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodoconsequat.</p>' +
+            '<p>Duis aute irure dolor in reprehenderit in voluptate velit essecillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat nonproident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>' +
+            '<button href="#" onclick="checkIn(0)">Check In</button>' +
+        '</div>';
+
+        var roddeyString = '<div class="building">' +
+            '<h1>Spanish Film Festival</h1>' +
+            '<img src="img/roddey-web.jpg" alt="Roddey Hall">' +
+            '<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmodtempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodoconsequat.</p>' +
+            '<p>Duis aute irure dolor in reprehenderit in voluptate velit essecillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat nonproident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>' +
+            '<button href="#" onclick="checkIn(1)">Check In</button>' +
+        '</div>';
+
+        var thomsonString = '<div class="building">' +
+            '<h1>Midful Meditation</h1>' +
+            '<img src="img/thomson-web.jpg" alt="Thomson Hall">' +
+            '<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmodtempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodoconsequat.</p>' +
+            '<p>Duis aute irure dolor in reprehenderit in voluptate velit essecillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat nonproident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>' +
+            '<button href="#" onclick="checkIn(3)">Check In</button>' +
+        '</div>';
+
+        var johnsonString = '<div class="building">' +
+            '<h1>Sankofa African</h1>' +
+            '<img src="img/johnson-web.jpg" alt="Johnson Hall">' +
+            '<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmodtempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodoconsequat.</p>' +
+            '<p>Duis aute irure dolor in reprehenderit in voluptate velit essecillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat nonproident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>' +
+            '<button href="#" onclick="checkIn(2)">Check In</button>' +
+        '</div>';
+
+        var locations = [
+            [34.936884,-81.029561, rutledgeString],// Rutledge
+            [34.936800,-81.030071, roddeyString],// Roddey
+            [34.936488,-81.030899, johnsonString],//Johnson
+            [34.942015,-81.033072, thomsonString] //Thomson
+        ];
+        function initMap() {
+            var map = new google.maps.Map(document.getElementById('map_canvas'), {
+              center: {lat: 34.939669, lng: -81.031009},
+              zoom: 16,
+              disableDefaultUI: true
+            });
+            var bounds = new google.maps.LatLngBounds();
+            var infowindow = new google.maps.InfoWindow();
+
+            for (var i in locations){
+                var x = locations[i];
+                var latlng = new google.maps.LatLng(x[0],x[1]);
+                bounds.extend(latlng);
+
+                var marker = new google.maps.Marker({
+                    position: latlng,
+                    map: map,
+                    title: x[2]
+                });
+
+                google.maps.event.addListener(marker, 'click', function(){
+                    infowindow.setContent(this.title);
+                    infowindow.open(map, this);
+                });
+
+                map.fitBounds(bounds);
+            }
+
+            google.maps.event.addDomListener(window, 'load', initialize);
+          }
+
+          function handleLocationError(browserHasGeolocation, infoWindow, pos){
+            infoWindow.setPosition(pos);
+            infoWindow.setContent(browserHasGeolocation ?
+                                  'Error: The Geolocation service failed.' :
+                                  'Error: Your browser doesn\'t support geolocation.');
+      }
+      function checkIn(location){
+            console.log("You passed me: " + location);
+            console.log("Which corresponds to: " + locations[location][0] + " " + locations[location][1]);
+            navigator.geolocation.getCurrentPosition(onSuccess, onError);
+            function onSuccess(position){
+                pos = [position.coords.latitude, position.coords.longitude];
+                if (pos[0].toFixed(3)===locations[location][0].toFixed(3) && pos[1].toFixed(3)===locations[location][1].toFixed(3)) {
+                    // console.log("You have arrived.");
+                    alert("You are checked into the event! Enjoy!")
+                }else{
+                    alert("We apologize, you must arrive at the event in order to check in.")
+                }
+            };
+            function onError(error){
+                console.log(error);
+            }
+        };
+    </script>
+    <script>
+      $( function() {
+        $( "#progressbar" ).progressbar({
+          value: 83
+        });
+        $('#progressbar>div').css({ 'background': '#B10F3B' });
+      } );
+  </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBDPs0dmXsmvzUJ-6Y-XaBsuI_HZUXqCFE&callback=initMap">
+    </script>
+    </head>
+    <body>
+        <div data-role="page" id="map_page">
+            <div data-role="header">
+                <h1>WU Events</h1>
+                <img src="img/WU-Logo-Web.png" alt="Winthrop University Logo">
+            </div>
+            <div id="map_canvas"></div>
+            <nav data-role="navbar" data-theme="a" class="navbar">
+                <ul>
+                    <li><a href="#events"></i>Events</a></li>
+                    <li><a href="#history">History</a></li>
+                    <li><a href="#user">Andrew</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div id="events" data-role="page" class="hide">
+            <div data-role="header">
+                <a href="javascript:history.back(1)"><i class="fa fa-chevron-left" aria-hidden="true"></i>Back</a>
+                <h1>Events</h1>
+            </div>
+            <div class="event">
+                <div>
+                    <h1>Mindful Meditation</h1>
+                    <p>Location: Dina's Place</p>
+                    <p>Date 2/2/17 11:00am-12:00pm</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                    tempor incididunt ut labore et dolore.</p>
+                 </div>
+                 <i class="fa fa-chevron-right fa-3x" aria-hidden="true"></i>
+            </div>
+            <div class="event">
+                <div>
+                    <h1>Sankofa African</h1>
+                    <p>Location: Richardson Ballroom</p>
+                    <p>Date 2/3/17 1:00pm-2:00pm</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                    tempor incididunt ut labore et dolore.</p>
+                 </div>
+                 <i class="fa fa-chevron-right fa-3x" aria-hidden="true"></i>
+            </div>
+            <div class="event">
+                <div>
+                    <h1>Spanish Film Festival</h1>
+                    <p>Dina's Place</p>
+                    <p>Date 2/6/17 7:00pm-9:00pm</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                    tempor incididunt ut labore et dolore.</p>
+                 </div>
+                 <i class="fa fa-chevron-right fa-3x" aria-hidden="true"></i>
+            </div>
+            <div class="event">
+                <div>
+                    <h1>Cookies and Conversations</h1>
+                    <p>Dina's Place</p>
+                    <p>Date 2/8/17 8:00pm-9:30pm</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                    tempor incididunt ut labore et dolore.</p>
+                 </div>
+                 <i class="fa fa-chevron-right fa-3x" aria-hidden="true"></i>
+            </div>
+            <div class="event">
+                <div>
+                    <h1>WUG Artist Talk</h1>
+                    <p>Rutledge 119</p>
+                    <p>Date 2/9/17 7:00pm-8:00pm</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                    tempor incididunt ut labore et dolore.</p>
+                 </div>
+                 <i class="fa fa-chevron-right fa-3x" aria-hidden="true"></i>
+            </div>
+            <div class="event">
+                <div>
+                    <h1>WUG Artist Talk</h1>
+                    <p>Rutledge 119</p>
+                    <p>Date 2/9/17 7:00pm-8:00pm</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                    tempor incididunt ut labore et dolore.</p>
+                 </div>
+                 <i class="fa fa-chevron-right fa-3x" aria-hidden="true"></i>
+            </div>
+            <div class="event">
+                <div>
+                    <h1>WUG Artist Talk</h1>
+                    <p>Rutledge 119</p>
+                    <p>Date 2/9/17 7:00pm-8:00pm</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                    tempor incididunt ut labore et dolore.</p>
+                 </div>
+                 <i class="fa fa-chevron-right fa-3x" aria-hidden="true"></i>
+            </div>
+        </div>
+        <div id="history" data-role="page" class="hide">
+        <div data-role="header">
+                <a href="javascript:history.back(1)"><i class="fa fa-chevron-left" aria-hidden="true"></i>Back</a>  
+                <h1>Events</h1>
+            </div>
+            <div class="event">
+                <div>
+                    <h1>Boy in the Striped Pajamas</h1>
+                    <p>Attended on: 1/25/17</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua.</p>
+                </div>
+                <i class="fa fa-chevron-right fa-3x" aria-hidden="true"></i>
+            </div>
+            <div class="event">
+                <div>
+                    <h1>2017 BMX World Championships</h1>
+                    <p>Attended on: 1/24/17</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua.</p>
+                </div>
+                <i class="fa fa-chevron-right fa-3x" aria-hidden="true"></i>
+            </div>
+            <div class="event">
+                <div>
+                    <h1>WUG Artist Talk</h1>
+                    <p>Attended on: 1/19/17</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua.</p>
+                </div>
+                <i class="fa fa-chevron-right fa-3x" aria-hidden="true"></i>
+            </div>
+            <div class="event">
+                <div>
+                    <h1>History of Inaugurations</h1>
+                    <p>Attended on: 1/19/17</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua.</p>
+                </div>
+                <i class="fa fa-chevron-right fa-3x" aria-hidden="true"></i>
+            </div>
+            <div class="event">
+                <div>
+                    <h1>Kaminer Haislip</h1>
+                    <p>Attended on: 1/17/17</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua.</p>
+                </div>
+                <i class="fa fa-chevron-right fa-3x" aria-hidden="true"></i>
+            </div>
+            <div class="event">
+                <div>
+                    <h1>Kaminer Haislip</h1>
+                    <p>Attended on: 1/17/17</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua.</p>
+                </div>
+                <i class="fa fa-chevron-right fa-3x" aria-hidden="true"></i>
+            </div>
+            <div class="event">
+                <div>
+                    <h1>Kaminer Haislip</h1>
+                    <p>Attended on: 1/17/17</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua.</p>
+                </div>
+                <i class="fa fa-chevron-right fa-3x" aria-hidden="true"></i>
+            </div>
+        </div>
+        <div id="user" data-role="page" class="hide">
+            <div data-role="header">
+                <a href="javascript:history.back(1)"><i class="fa fa-chevron-left" aria-hidden="true"></i>Back</a> 
+                <h1>Andrew</h1>
+            </div>
+            <div id="userDetails">
+                <h1>User: smitha110</h1>
+                <h2>Culural Event Progress: </h2>
+                <div id="progressbar"></div>
+                <ul>
+                    <li>Events Attended: 15
+                        <ul>
+                            <li>Cultural: 8</li>
+                            <li>Sporting: 5</li>
+                            <li>General: 2</li>
+                            <li>This Week: 5</li>
+                        </ul>
+                    </li>
+                    <li>Raffle Entries: 5</li>
+                </ul>
+                <button id="logout">Logout</button>
+            </div>
+        </div>
+    </body>
+</html>
