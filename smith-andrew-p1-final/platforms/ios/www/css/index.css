@@ -173,6 +173,7 @@ nav .ui-btn{
     align-items: center;
 }
 nav .ui-btn span{
+    font-size: 16px;
     margin-top: 5%;
     border: none;
     color: #FEC33B;
@@ -270,6 +271,12 @@ div.event p:nth-child(4){
     width: 80%;
     border-radius: 25px;
     background-color: #FEC33B;
+}
+.ui-header .ui-title{
+    font-size: 20px;
+}
+.ui-header .ui-btn-inner{
+    border: none;
 }
 /*End of User Details page*/
 /*End New Styles
